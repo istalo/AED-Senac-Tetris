@@ -5,19 +5,19 @@ from pathlib import Path
 
 pygame.init()
 
-TAMANHO_BLOCO = 30
-BOARD_LARGURA = 300
-LARGURA = 420
-ALTURA = 600
-COLUNAS = BOARD_LARGURA // TAMANHO_BLOCO
-LINHAS = ALTURA // TAMANHO_BLOCO
-PAINEL_X = BOARD_LARGURA
+tamanho_bloco = 30
+largura_tabuleiro = 300
+largura = 420
+altura = 600
+colunas = largura_tabuleiro // tamanho_bloco
+linhas = altura // tamanho_bloco
+painel_x = largura_tabuleiro
 
-PRETO = (0, 0, 0)
-CINZA = (50, 50, 50)
-BRANCO = (255, 255, 255)
-PANEL_BG = (20, 20, 20)
-CORES = [
+preto = (0, 0, 0)
+cinza = (50, 50, 50)
+branco = (255, 255, 255)
+fundo_painel = (20, 20, 20)
+cores = [
     (0, 255, 255),
     (255, 255, 0),
     (128, 0, 128),
@@ -27,7 +27,7 @@ CORES = [
     (255, 165, 0),
 ]
 
-PECAS = [
+pecas = [
     [[1, 1, 1, 1]],
     [[1, 1], [1, 1]],
     [[0, 1, 0], [1, 1, 1]],
@@ -37,7 +37,7 @@ PECAS = [
     [[0, 0, 1], [1, 1, 1]],
 ]
 
-tela = pygame.display.set_mode((LARGURA, ALTURA))
+tela = pygame.display.set_mode((largura, altura))
 pygame.display.set_caption("Tetris Basicão")
 relogio = pygame.time.Clock()
 fonte = pygame.font.SysFont("arial", 24)
@@ -46,7 +46,7 @@ ARQUIVO_RANKING = Path(__file__).with_name("ranking.txt")
 
 
 def criar_grade():
-    return [[0 for _ in range(COLUNAS)] for _ in range(LINHAS)]
+    return [[0 for _ in range(colunas)] for _ in range(linhas)]
 
 
 def verificar_colisao(grade, peca, desloc_x, desloc_y):
@@ -56,7 +56,7 @@ def verificar_colisao(grade, peca, desloc_x, desloc_y):
                 continue
             novo_x = x + desloc_x
             novo_y = y + desloc_y
-            if novo_x < 0 or novo_x >= COLUNAS or novo_y >= LINHAS:
+            if novo_x < 0 or novo_x >= colunas or novo_y >= linhas:
                 return True
             if novo_y >= 0 and grade[novo_y][novo_x]:
                 return True
@@ -72,12 +72,12 @@ def mesclar_peca(grade, peca, desloc_x, desloc_y, cor_idx):
 
 def limpar_linhas(grade):
     linhas_limpas = 0
-    y = LINHAS - 1
+    y = linhas - 1
     
     while y >= 0:
         if 0 not in grade[y]:
             del grade[y]
-            grade.insert(0, [0 for _ in range(COLUNAS)])
+            grade.insert(0, [0 for _ in range(colunas)])
             linhas_limpas += 1
         else:
             y -= 1
@@ -97,44 +97,44 @@ def validar_peca(grade, peca, desloc_x, desloc_y):
 
 
 def criar_nova_peca():
-    peca = random.choice(PECAS)
-    cor = PECAS.index(peca) + 1
+    peca = random.choice(pecas)
+    cor = pecas.index(peca) + 1
     return peca, cor
 
 
 def posicao_inicial(peca):
-    return COLUNAS // 2 - len(peca[0]) // 2, 0
+    return colunas // 2 - len(peca[0]) // 2, 0
 
 
-def desenhar_texto(texto, x, y, cor=BRANCO):
+def desenhar_texto(texto, x, y, cor=branco):
     imagem = fonte.render(texto, True, cor)
     tela.blit(imagem, (x, y))
 
 
-def desenhar_texto_pequeno(texto, x, y, cor=BRANCO):
+def desenhar_texto_pequeno(texto, x, y, cor=branco):
     imagem = fonte_pequena.render(texto, True, cor)
     tela.blit(imagem, (x, y))
 
 
 def desenhar_grade(tela, grade):
-    for y in range(LINHAS):
-        for x in range(COLUNAS):
+    for y in range(linhas):
+        for x in range(colunas):
             cor = grade[y][x]
-            retangulo = (x * TAMANHO_BLOCO, y * TAMANHO_BLOCO, TAMANHO_BLOCO, TAMANHO_BLOCO)
+            retangulo = (x * tamanho_bloco, y * tamanho_bloco, tamanho_bloco, tamanho_bloco)
             if cor:
-                pygame.draw.rect(tela, CORES[cor - 1], retangulo)
-                pygame.draw.rect(tela, BRANCO, retangulo, 1)
+                pygame.draw.rect(tela, cores[cor - 1], retangulo)
+                pygame.draw.rect(tela, branco, retangulo, 1)
             else:
-                pygame.draw.rect(tela, CINZA, retangulo, 1)
+                pygame.draw.rect(tela, cinza, retangulo, 1)
 
 
 def desenhar_peca(tela, peca, cor_idx, x_peca, y_peca):
     for y, linha in enumerate(peca):
         for x, celula in enumerate(linha):
             if celula:
-                retangulo = ((x_peca + x) * TAMANHO_BLOCO, (y_peca + y) * TAMANHO_BLOCO, TAMANHO_BLOCO, TAMANHO_BLOCO)
-                pygame.draw.rect(tela, CORES[cor_idx - 1], retangulo)
-                pygame.draw.rect(tela, BRANCO, retangulo, 1)
+                retangulo = ((x_peca + x) * tamanho_bloco, (y_peca + y) * tamanho_bloco, tamanho_bloco, tamanho_bloco)
+                pygame.draw.rect(tela, cores[cor_idx - 1], retangulo)
+                pygame.draw.rect(tela, branco, retangulo, 1)
 
 
 def desenhar_sombra(tela, grade, peca, cor_idx, x_peca, y_peca): # Utilizado para saber onde a peça atual irá cair!
@@ -144,12 +144,12 @@ def desenhar_sombra(tela, grade, peca, cor_idx, x_peca, y_peca): # Utilizado par
     for y, linha in enumerate(peca):
         for x, celula in enumerate(linha):
             if celula:
-                s = pygame.Surface((TAMANHO_BLOCO, TAMANHO_BLOCO), pygame.SRCALPHA)
-                r, g, b = CORES[cor_idx - 1]
+                s = pygame.Surface((tamanho_bloco, tamanho_bloco), pygame.SRCALPHA)
+                r, g, b = cores[cor_idx - 1]
                 s.fill((r, g, b, 80))
-                pos = ((x_peca + x) * TAMANHO_BLOCO, (drop_y + y) * TAMANHO_BLOCO)
+                pos = ((x_peca + x) * tamanho_bloco, (drop_y + y) * tamanho_bloco)
                 tela.blit(s, pos)
-                pygame.draw.rect(tela, BRANCO, (pos[0], pos[1], TAMANHO_BLOCO, TAMANHO_BLOCO), 1)
+                pygame.draw.rect(tela, branco, (pos[0], pos[1], tamanho_bloco, tamanho_bloco), 1)
 
 
 def desenhar_preview(peca, cor_idx, caixa_x, caixa_y, caixa_largura, caixa_altura):
@@ -163,25 +163,25 @@ def desenhar_preview(peca, cor_idx, caixa_x, caixa_y, caixa_largura, caixa_altur
         for x, celula in enumerate(linha):
             if celula:
                 retangulo = (offset_x + x * bloco, offset_y + y * bloco, bloco, bloco)
-                pygame.draw.rect(tela, CORES[cor_idx - 1], retangulo)
-                pygame.draw.rect(tela, BRANCO, retangulo, 1)
+                pygame.draw.rect(tela, cores[cor_idx - 1], retangulo)
+                pygame.draw.rect(tela, branco, retangulo, 1)
 
 
 def desenhar_painel(peca_seguinte, cor_seguinte, peca_segura, cor_segura):
-    painel_largura = LARGURA - PAINEL_X
-    pygame.draw.rect(tela, PANEL_BG, (PAINEL_X, 0, painel_largura, ALTURA))
-    pygame.draw.line(tela, BRANCO, (PAINEL_X, 0), (PAINEL_X, ALTURA), 2)
+    painel_largura = largura - painel_x
+    pygame.draw.rect(tela, fundo_painel, (painel_x, 0, painel_largura, altura))
+    pygame.draw.line(tela, branco, (painel_x, 0), (painel_x, altura), 2)
 
-    desenhar_texto_pequeno("Proxima", PAINEL_X + 18, 20)
-    pygame.draw.rect(tela, CINZA, (PAINEL_X + 18, 55, painel_largura - 36, 110), 1)
-    desenhar_preview(peca_seguinte, cor_seguinte, PAINEL_X + 18, 55, painel_largura - 36, 110)
+    desenhar_texto_pequeno("Proxima", painel_x + 18, 20)
+    pygame.draw.rect(tela, cinza, (painel_x + 18, 55, painel_largura - 36, 110), 1)
+    desenhar_preview(peca_seguinte, cor_seguinte, painel_x + 18, 55, painel_largura - 36, 110)
 
-    desenhar_texto_pequeno("Segurada", PAINEL_X + 18, 195)
-    pygame.draw.rect(tela, CINZA, (PAINEL_X + 18, 230, painel_largura - 36, 110), 1)
+    desenhar_texto_pequeno("Segurada", painel_x + 18, 195)
+    pygame.draw.rect(tela, cinza, (painel_x + 18, 230, painel_largura - 36, 110), 1)
     if peca_segura is None:
-        desenhar_texto_pequeno("--", PAINEL_X + 50, 270)
+        desenhar_texto_pequeno("--", painel_x + 50, 270)
     else:
-        desenhar_preview(peca_segura, cor_segura, PAINEL_X + 18, 230, painel_largura - 36, 110)
+        desenhar_preview(peca_segura, cor_segura, painel_x + 18, 230, painel_largura - 36, 110)
 
     fonte_instrucoes = pygame.font.SysFont("arial", 16)
     instrucoes = [
@@ -193,14 +193,14 @@ def desenhar_painel(peca_seguinte, cor_seguinte, peca_segura, cor_segura):
     ]
     y_instr = 380
     for instrucao in instrucoes:
-        imagem = fonte_instrucoes.render(instrucao, True, BRANCO)
-        tela.blit(imagem, (PAINEL_X + 10, y_instr))
+        imagem = fonte_instrucoes.render(instrucao, True, branco)
+        tela.blit(imagem, (painel_x + 10, y_instr))
         y_instr += 22
 
 
-def desenhar_mensagem_central(texto, cor=BRANCO):
+def desenhar_mensagem_central(texto, cor=branco):
     imagem = fonte.render(texto, True, cor)
-    retangulo = imagem.get_rect(center=(BOARD_LARGURA // 2, ALTURA // 2))
+    retangulo = imagem.get_rect(center=(largura_tabuleiro // 2, altura // 2))
     tela.blit(imagem, retangulo)
 
 
@@ -264,17 +264,17 @@ def escolher_nivel_ui():
                 elif evento.key == pygame.K_RETURN:
                     selecionando = False
 
-        tela.fill(PRETO)
-        titulo = fonte.render("Escolha o nivel (Up/Down) e pressione Enter", True, BRANCO)
-        rect = titulo.get_rect(center=(LARGURA // 2, ALTURA // 2 - 40))
+        tela.fill(preto)
+        titulo = fonte.render("Escolha o nivel (Cima/Baixo) e pressione Enter", True, branco)
+        rect = titulo.get_rect(center=(largura // 2, altura // 2 - 40))
         tela.blit(titulo, rect)
 
         nivel_txt = fonte.render(str(nivel), True, (255, 215, 0))
-        rect2 = nivel_txt.get_rect(center=(LARGURA // 2, ALTURA // 2 + 10))
+        rect2 = nivel_txt.get_rect(center=(largura // 2, altura // 2 + 10))
         tela.blit(nivel_txt, rect2)
 
-        instru = fonte_pequena.render("Pressione Esc para sair", True, CINZA)
-        tela.blit(instru, (LARGURA - 200, ALTURA - 30))
+        instru = fonte_pequena.render("Pressione Esc para sair", True, cinza)
+        tela.blit(instru, (largura - 200, altura - 30))
 
         pygame.display.flip()
 
@@ -423,7 +423,7 @@ def main():
         if mensagem_all_clear > 0:
             mensagem_all_clear -= 1
 
-        tela.fill(PRETO)
+        tela.fill(preto)
         desenhar_grade(tela, grade)
         desenhar_sombra(tela, grade, peca_atual, cor_atual, x_peca, y_peca)
         desenhar_peca(tela, peca_atual, cor_atual, x_peca, y_peca)
@@ -454,10 +454,10 @@ def main():
                     if evento.unicode and len(nome) < 20:
                         nome += evento.unicode
 
-        tela.fill(PRETO)
-        desenhar_texto(fim_texto, 20, ALTURA // 2 - 60)
-        desenhar_texto_pequeno("Digite seu nome e pressione Enter:", 20, ALTURA // 2 - 20)
-        desenhar_texto_pequeno(nome + ("_" if (pygame.time.get_ticks() // 500) % 2 == 0 else ""), 20, ALTURA // 2 + 10)
+        tela.fill(preto)
+        desenhar_texto(fim_texto, 20, altura // 2 - 60)
+        desenhar_texto_pequeno("Digite seu nome e pressione Enter:", 20, altura // 2 - 20)
+        desenhar_texto_pequeno(nome + ("_" if (pygame.time.get_ticks() // 500) % 2 == 0 else ""), 20, altura // 2 + 10)
         pygame.display.flip()
 
     if not nome:
@@ -481,7 +481,7 @@ def main():
                 if evento.key == pygame.K_RETURN or evento.key == pygame.K_ESCAPE:
                     mostrando = False
 
-        tela.fill(PRETO)
+        tela.fill(preto)
         desenhar_texto("Ranking - Top 10", 20, 20)
         y = 60
         for i, entry in enumerate(top10, start=1):
@@ -489,7 +489,7 @@ def main():
             desenhar_texto_pequeno(f"{i}. {nome_e} - {pontos_e} pts - N{nivel_e}", 20, y)
             y += 28
 
-        desenhar_texto_pequeno("Pressione Enter ou Esc para sair", 20, ALTURA - 30)
+        desenhar_texto_pequeno("Pressione Enter ou Esc para sair", 20, altura - 30)
         pygame.display.flip()
 
     pygame.quit()
