@@ -1,7 +1,7 @@
 import random
 import pygame
 import sys
-from pathlib import Path
+import os
 
 pygame.init()
 
@@ -42,7 +42,7 @@ pygame.display.set_caption("Tetris Basicão")
 relogio = pygame.time.Clock()
 fonte = pygame.font.SysFont("arial", 24)
 fonte_pequena = pygame.font.SysFont("arial", 20)
-ARQUIVO_RANKING = Path(__file__).with_name("ranking.txt")
+arquivo_ranking = "ranking.txt"
 
 
 def criar_grade():
@@ -210,11 +210,11 @@ def limpar_nome_ranking(nome):
 
 def carregar_ranking():
     entradas = []
-    if not ARQUIVO_RANKING.exists():
+    if not os.path.exists(arquivo_ranking):
         return entradas
 
     try:
-        with ARQUIVO_RANKING.open("r", encoding="utf-8") as arq:
+        with open(arquivo_ranking, "r", encoding="utf-8") as arq:
             for linha in arq:
                 partes = [parte.strip() for parte in linha.strip().split(";")]
                 if len(partes) < 2:
@@ -240,7 +240,7 @@ def salvar_ranking(nome, pontuacao, nivel_atual):
     entradas.sort(key=lambda x: x[1], reverse=True)
 
     try:
-        with ARQUIVO_RANKING.open("w", encoding="utf-8") as arq:
+        with open(arquivo_ranking, "w", encoding="utf-8") as arq:
             for nome_e, pontos_e, nivel_e in entradas[:10]:
                 arq.write(f"{limpar_nome_ranking(nome_e) or 'Anonimo'};{pontos_e};{nivel_e}\n")
     except Exception:
