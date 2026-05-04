@@ -38,7 +38,7 @@ PECAS = [
 ]
 
 tela = pygame.display.set_mode((LARGURA, ALTURA))
-pygame.display.set_caption("Tetris em tempo real")
+pygame.display.set_caption("Tetris Basicão")
 relogio = pygame.time.Clock()
 fonte = pygame.font.SysFont("arial", 24)
 fonte_pequena = pygame.font.SysFont("arial", 20)
